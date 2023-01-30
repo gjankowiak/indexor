@@ -78,7 +78,7 @@ const RBracket = createToken({name: "RBracket", pattern: /}/});
 const NumberLiteral = createToken({name: "NumberLiteral", pattern: /[1-9]\d*/});
 const AlphaLiteral = createToken({name: "AlphaLiteral", pattern: /[A-Z]/});
 
-const IndexLiteral = createToken({name: "IndexLiteral", pattern: /[a-z]/});
+const IndexLiteral = createToken({name: "IndexLiteral", pattern: /[a-zαβγδεφζρτψπθωξσχνηκλμ]/});
 
 const DiffOperator = createToken({name: "DiffOperator", pattern: Lexer.NA});
 const Comma = createToken({name: "Comma", pattern: /,/, categories: DiffOperator});

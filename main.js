@@ -8,12 +8,8 @@ const ein = document.getElementById("ein");
 const tex = document.getElementById("tex");
 const replaced_tex = document.getElementById("replaced_tex");
 
-const replace_btn = document.getElementById("replace");
-replace_btn.textContent = "Replace";
-
 const errors = document.getElementById("errors");
 
-// const iparser = new IndexorPure([], { outputCst: true });
 const visitor = new IndexorInterpreter();
 
 const outputElements = [contra, cov, ein, errors, tex, replaced_tex];
@@ -81,9 +77,9 @@ input.addEventListener("input", () => {
                 input.type = "text";
                 input.name = i;
                 input.value = i;
-                input.size = 1;
-                input.maxlength = 1;
+                input.size = 10;
                 input.className = "replace_value";
+                input.addEventListener("input", replace);
                 e.appendChild(text);
                 e.appendChild(input);
                 cov.appendChild(e);
@@ -96,9 +92,9 @@ input.addEventListener("input", () => {
                 input.type = "text";
                 input.name = i;
                 input.value = i;
-                input.size = 1;
-                input.maxlength = 1;
+                input.size = 10;
                 input.className = "replace_value";
+                input.addEventListener("input", replace);
                 e.appendChild(text);
                 e.appendChild(input);
                 contra.appendChild(e);
@@ -111,24 +107,19 @@ input.addEventListener("input", () => {
                 input.type = "text";
                 input.name = i;
                 input.value = i;
-                input.size = 1;
-                input.maxlength = 1;
+                input.size = 10;
                 input.className = "replace_value";
+                input.addEventListener("input", replace);
                 e.appendChild(text);
                 e.appendChild(input);
                 ein.appendChild(e);
             });
-            // cov.textContent = r.cov_list.join(", ");
-            // contra.textContent = r.contra_list.join(", ");
-            // ein.textContent = r.ein_list.join(", ");
             show(cov);
             show(contra);
             show(ein);
-            show(replace_btn);
 
             let mj_options = MathJax.getMetricsFor(tex, true);
             const mj_tex = MathJax.tex2svg(input.value, mj_options);
-            //tex.innerHTML = mj_tex;
             tex.appendChild(mj_tex);
             show(tex);
         }
@@ -151,8 +142,6 @@ input.addEventListener("input", () => {
         }
     }
 });
-
-replace_btn.addEventListener("click", replace);
 
 input.dispatchEvent(new Event("input"));
 }
