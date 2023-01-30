@@ -230,7 +230,9 @@ class IndexorInterpreter extends BaseCstVisitor {
         result.contra.forEach((v) => result.contra_list.push(v));
         result.ein.forEach((v) => result.ein_list.push(v));
 
-        result.ctx = ctx;
+        result.cov_list.sort();
+        result.contra_list.sort();
+        result.ein_list.sort();
 
         return result;
     }

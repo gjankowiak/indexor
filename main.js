@@ -70,9 +70,11 @@ input.addEventListener("input", () => {
         if (r.errors.length > 0) {
             show(errors);
         } else {
-            r.cov.forEach((i) => {
+            r.cov_list.forEach((i) => {
                 const e = document.createElement("li");
-                const text = document.createTextNode(i + " → ");
+                const text = document.createElement("span");
+                text.textContent = i + " → ";
+                text.className = "replace_target";
                 const input = document.createElement("input");
                 input.type = "text";
                 input.name = i;
@@ -85,9 +87,11 @@ input.addEventListener("input", () => {
                 cov.appendChild(e);
             });
 
-            r.contra.forEach((i) => {
+            r.contra_list.forEach((i) => {
                 const e = document.createElement("li");
-                const text = document.createTextNode(i + " → ");
+                const text = document.createElement("span");
+                text.textContent = i + " → ";
+                text.className = "replace_target";
                 const input = document.createElement("input");
                 input.type = "text";
                 input.name = i;
@@ -100,9 +104,11 @@ input.addEventListener("input", () => {
                 contra.appendChild(e);
             });
 
-            r.ein.forEach((i) => {
+            r.ein_list.forEach((i) => {
                 const e = document.createElement("li");
-                const text = document.createTextNode(i + " → ");
+                const text = document.createElement("span");
+                text.textContent = i + " → ";
+                text.className = "replace_target";
                 const input = document.createElement("input");
                 input.type = "text";
                 input.name = i;
