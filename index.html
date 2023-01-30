@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Indexor</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- <link href="css/style.css" rel="stylesheet"> -->
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+        <script src="https://unpkg.com/chevrotain/lib/chevrotain.js"></script>
+        <script src="indexor.js"></script>
+    </head>
+    <body>
+        Input:
+        <div>(LaTeX, only +, -. _{} ^{} optional but always in that order, tensors: A to Z (one letter only), indices a to z)</div>
+        <p><input type="text" id="input" size=100 value="R_{jl;ki}-R_{jk,li}-R_{il;kj}+R_{ik;lj}+G^{pq}(R_{pjkl}R_{qi}+R_{ipkl}R_{qj})"></p>
+
+        <div>
+        <div id="tex">-</div>
+        </div>
+
+        <div class="hidden">
+        Covariant indices: <ul id="cov"></ul>
+        </div>
+
+        <div class="hidden">
+        Contravariant indices: <ul id="contra"></ul>
+        </div>
+
+        <div class="hidden">
+        Einstein sum indices: <ul id="ein"></ul>
+        </div>
+
+        <div class="hidden">
+            <input type="submit" id="replace" value="Replace">
+        </div>
+
+        <div class="hidden">
+            <h3>Errors</h3>
+            <ul id="errors"></ul>
+        </div>
+
+        <div>
+        <div id="replaced_tex">-</div>
+        </div>
+
+    <style>
+    .hidden { display: none; }
+    </style>
+    <script src="main.js"></script>
+    </body>
+</html>
