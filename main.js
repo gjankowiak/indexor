@@ -1,4 +1,4 @@
-
+function bootstrap() {
 const input = document.getElementById("input");
 
 const contra = document.getElementById("contra");
@@ -155,3 +155,4 @@ input.addEventListener("input", () => {
 replace_btn.addEventListener("click", replace);
 
 input.dispatchEvent(new Event("input"));
+}

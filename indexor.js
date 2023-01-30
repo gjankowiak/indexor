@@ -75,7 +75,6 @@ const SubScript = createToken({name: "SubScript", pattern: /_/, categories: Scri
 const LBracket = createToken({name: "LBracket", pattern: /{/});
 const RBracket = createToken({name: "RBracket", pattern: /}/});
 
-
 const NumberLiteral = createToken({name: "NumberLiteral", pattern: /[1-9]\d*/});
 const AlphaLiteral = createToken({name: "AlphaLiteral", pattern: /[A-Z]/});
 
@@ -238,7 +237,6 @@ class IndexorInterpreter extends BaseCstVisitor {
 
     additionExpression(ctx) {
         let result_lhs = this.visit(ctx.lhs);
-        console.log(result_lhs);
 
         // "rhs" key may be undefined as the grammar defines it as optional (MANY === zero or more).
         if (ctx.rhs) {
@@ -322,7 +320,7 @@ class IndexorInterpreter extends BaseCstVisitor {
         }
         else if (ctx.NumberLiteral) {
             // If a key exists on the ctx, at least one element is guaranteed
-            return { cov: new Set([]), contra: new Set([]), eig: new Set([]), errors: [] }
+            return { cov: new Set([]), contra: new Set([]), ein: new Set([]), errors: [] }
         }
         else if (ctx.supScriptedExpression) {
     return this.visit(ctx.supScriptedExpression)
@@ -431,6 +429,7 @@ class IndexorReplacer extends BaseCstVisitor {
     }
 
     additionExpression(ctx) {
+        console.log(ctx);
         let result = this.visit(ctx.lhs);
 
         // "rhs" key may be undefined as the grammar defines it as optional (MANY === zero or more).
@@ -438,7 +437,7 @@ class IndexorReplacer extends BaseCstVisitor {
             ctx.rhs.forEach((rhsOperand, idx) => {
                 let rhsValue = this.visit(rhsOperand)
                 let operator = ctx.AdditionOperator[idx]
-                result += " + " + rhsValue;
+                result += " " + operator.image + " " + rhsValue;
             })
         }
 
