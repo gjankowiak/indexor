@@ -10,9 +10,22 @@
         <script src="chevrotain.min.js"></script>
     </head>
     <body>
-        Input:
-        <div>(LaTeX, only +, -. _{} ^{} optional but always in that order, tensors: A to Z (one letter only), indices a to z)</div>
-        <p><input type="text" id="input" size=100 value="R_{jl;ki}-R_{jk,li}-R_{il;kj}+R_{ik;lj}+G^{pq}(R_{pjkl}R_{qi}+R_{ipkl}R_{qj})"></p>
+      <div>
+        <details open>
+        <summary>Instructions</summary>
+          <ul id="instructions_list">
+            <li>Input is LaTeX-like (see example), some commands allowed</li>
+            <li>Identifiers ("tensors" and indices) can be sequences of letter from a to z (lower- or uppercase)</li>
+            <li>Indices must be separated by spaces</li>
+            <li>Only operators supported are + and -, no fractions</li>
+            <li>Multiplication is implicit</li>
+            <li>No indices after parentheses</li>
+            <li>Sub-/supercript are written with _{indices} and ^{indices}, <i>in that order</i></li>
+            <li>LaTeX commands can be used in the replacement rule (\alpha, etc.)
+          </ul>
+        </details>
+        <p>Input:
+        <input type="text" id="input" size=100 value="R_{j l;k i}-R_{j k,l i}-R_{i l;k j}+R_{i k;l j}+g^{p q}(R_{p j k l}R_{q i}+R_{i p k l}R_{q j})"></p>
 
         <div>
         <div id="tex">-</div>
@@ -42,12 +55,14 @@
     <style>
     body { font-size: 1.2em; font-family: sans; }
     input { font-size: 1.0em; border: none; background-color: #eee; }
+    p { margin-top: 1em; }
     .replace_value { padding: 0.2em; padding-left: 0.5em;}
     .replace_target { text-align: right; display: inline-block; width: 3em; margin-right: 0.5em;}
     li { margin-bottom: 0.2em; }
     .hidden { display: none; }
     #input { padding: 0.5em; }
     ul { list-style: none; }
+    ul#instructions_list { list-style: circle; font-size: 0.8em; }
     </style>
     
 

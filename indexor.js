@@ -76,9 +76,9 @@ const LBracket = createToken({name: "LBracket", pattern: /{/});
 const RBracket = createToken({name: "RBracket", pattern: /}/});
 
 const NumberLiteral = createToken({name: "NumberLiteral", pattern: /[1-9]\d*/});
-const AlphaLiteral = createToken({name: "AlphaLiteral", pattern: /[A-Z]/});
+const AlphaLiteral = createToken({name: "AlphaLiteral", pattern: /\\?[a-zA-Z]+/});
 
-const IndexLiteral = createToken({name: "IndexLiteral", pattern: /[a-zαβγδεφζρτψπθωξσχνηκλμ]/});
+// const IndexLiteral = createToken({name: "IndexLiteral", pattern: /[a-zαβγδεφζρτψπθωξσχνηκλμ]/});
 
 const DiffOperator = createToken({name: "DiffOperator", pattern: Lexer.NA});
 const Comma = createToken({name: "Comma", pattern: /,/, categories: DiffOperator});
@@ -93,7 +93,7 @@ const WhiteSpace = createToken({
 
 const allTokens = [WhiteSpace, // whitespace is normally very common so it should be placed first to speed up the lexer's performance
     Plus, Minus, Multi, Div, LParen, RParen, SubScript, SupScript, LBracket, RBracket,
-    IndexLiteral, AlphaLiteral, NumberLiteral, AdditionOperator, MultiplicationOperator, ScriptOperator, DiffOperator, Comma, Colon];
+    AlphaLiteral, NumberLiteral, AdditionOperator, MultiplicationOperator, ScriptOperator, DiffOperator, Comma, Colon];
 const IndexorLexer = new Lexer(allTokens);
 
 // ----------------- parser -----------------
@@ -184,7 +184,7 @@ class IndexorPure extends CstParser {
         });
 
         $.RULE("indicesExpression", () => {
-            $.CONSUME(IndexLiteral, {LABEL: "head"});
+            $.CONSUME(AlphaLiteral, {LABEL: "head"});
             $.MANY(() => {
                 $.SUBRULE2($.indicesExpression, {LABEL: "tail"});
             });
@@ -418,12 +418,17 @@ indicesExpression(ctx) {
 }
 
 class IndexorReplacer extends BaseCstVisitor {
-    constructor(indicesMap) {
+    constructor() {
         super()
         // This helper will detect any missing or redundant methods on this visitor
+        this.indicesMap = {};
+        this.indices = new Set([]);
+        this.validateVisitor()
+    }
+
+    set_indicesMap(indicesMap) {
         this.indicesMap = indicesMap
         this.indices = new Set(Object.keys(this.indicesMap))
-        this.validateVisitor()
     }
 
     expression(ctx) {
@@ -526,7 +531,7 @@ class IndexorReplacer extends BaseCstVisitor {
             result = this.indicesMap[image];
         }
         if (ctx.tail) {
-            result = result + this.visit(ctx.tail);
+            result = result + " " + this.visit(ctx.tail);
         }
         return result;
     }

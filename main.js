@@ -11,8 +11,11 @@ const replaced_tex = document.getElementById("replaced_tex");
 const errors = document.getElementById("errors");
 
 const visitor = new IndexorInterpreter();
+const replacer = new IndexorReplacer();
 
 const outputElements = [contra, cov, ein, errors, tex, replaced_tex];
+
+let parser_expression;
 
 function show(e) {
     e.parentElement.className = "";
@@ -26,17 +29,14 @@ function replace() {
     let r = {};
     fields = document.getElementsByClassName("replace_value");
     for(i of fields) {
-        r[i.name] = i.value;
+        if (i.name != i.value) {
+            r[i.name] = i.value;
+        }
     }
 
-    const replacer = new IndexorReplacer(r);
+    replacer.set_indicesMap(r);
 
-    lexResult = IndexorLexer.tokenize(input.value);
-
-    parser.input = lexResult.tokens
-    expr = parser.expression()
-
-    r = replacer.visit(expr);
+    r = replacer.visit(parser_expression);
 
     let mj_options = MathJax.getMetricsFor(replaced_tex, true);
     const mj_tex = MathJax.tex2svg(r, mj_options);
@@ -51,7 +51,7 @@ input.addEventListener("input", () => {
     lexResult = IndexorLexer.tokenize(input.value);
 
     parser.input = lexResult.tokens
-    expr = parser.expression()
+    parser_expression = parser.expression()
 
     outputElements.map((e) => {
         e.replaceChildren();
@@ -59,7 +59,7 @@ input.addEventListener("input", () => {
     });
 
     if (parser.errors.length == 0) {
-        r = visitor.visit(expr);
+        r = visitor.visit(parser_expression);
 
         r.errors.forEach((e) => {
             const i = document.createElement("li");
@@ -128,6 +128,7 @@ input.addEventListener("input", () => {
             const mj_tex = MathJax.tex2svg(input.value, mj_options);
             tex.appendChild(mj_tex);
             show(tex);
+            replace();
         }
 
     } else {
