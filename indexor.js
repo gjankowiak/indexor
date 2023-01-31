@@ -431,7 +431,6 @@ class IndexorReplacer extends BaseCstVisitor {
     }
 
     additionExpression(ctx) {
-        console.log(ctx);
         let result = this.visit(ctx.lhs);
 
         // "rhs" key may be undefined as the grammar defines it as optional (MANY === zero or more).
