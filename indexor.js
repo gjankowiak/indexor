@@ -60,10 +60,10 @@ const CstParser = chevrotain.CstParser;
 const AdditionOperator = createToken({name: "AdditionOperator", pattern: Lexer.NA});
 const Plus = createToken({name: "Plus", pattern: /\+/, categories: AdditionOperator});
 const Minus = createToken({name: "Minus", pattern: /-/, categories: AdditionOperator});
+const Equal = createToken({name: "Equal", pattern: /=/, categories: AdditionOperator});
 
 const MultiplicationOperator = createToken({name: "MultiplicationOperator", pattern: Lexer.NA});
 const Multi = createToken({name: "Multi", pattern: /\*/, categories: MultiplicationOperator});
-const Div = createToken({name: "Div", pattern: /\//, categories: MultiplicationOperator});
 
 const LParen = createToken({name: "LParen", pattern: /\(/});
 const RParen = createToken({name: "RParen", pattern: /\)/});
@@ -92,7 +92,7 @@ const WhiteSpace = createToken({
 });
 
 const allTokens = [WhiteSpace, // whitespace is normally very common so it should be placed first to speed up the lexer's performance
-    Plus, Minus, Multi, Div, LParen, RParen, SubScript, SupScript, LBracket, RBracket,
+    Plus, Minus, Multi, Equal, LParen, RParen, SubScript, SupScript, LBracket, RBracket,
     AlphaLiteral, NumberLiteral, AdditionOperator, MultiplicationOperator, ScriptOperator, DiffOperator, Comma, Colon];
 const IndexorLexer = new Lexer(allTokens);
 
@@ -473,7 +473,7 @@ class IndexorReplacer extends BaseCstVisitor {
         }
         else if (ctx.NumberLiteral) {
             // If a key exists on the ctx, at least one element is guaranteed
-            return ctx.NumberLiteral.image;
+            return ctx.NumberLiteral[0].image;
         }
         else if (ctx.supScriptedExpression) {
             return this.visit(ctx.supScriptedExpression)

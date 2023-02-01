@@ -17,7 +17,7 @@
             <li>Input is LaTeX-like (see example), some commands allowed</li>
             <li>Identifiers ("tensors" and indices) can be sequences of letter from a to z (lower- or uppercase)</li>
             <li>Indices must be separated by spaces</li>
-            <li>Only operators supported are + and -, no fractions</li>
+            <li>Only operators supported are + - * and =, no fractions</li>
             <li>Multiplication is implicit</li>
             <li>No indices after parentheses</li>
             <li>Sub-/supercript are written with _{indices} and ^{indices}, <i>in that order</i></li>
@@ -25,7 +25,7 @@
           </ul>
         </details>
         <p>Input:
-        <input type="text" id="input" size=100 value="R_{j l;k i}-R_{j k,l i}-R_{i l;k j}+R_{i k;l j}+g^{p q}(R_{p j k l}R_{q i}+R_{i p k l}R_{q j})"></p>
+        <input type="text" id="input" size=100 value="\Delta R_{i j k l} + 2(B_{i j k l} - B_{i j l k} - B_{i l j k} + B_{i k j l}) = R_{j l;k i}-R_{j k,l i}-R_{i l;k j}+R_{i k;l j}+g^{p q}(R_{p j k l}R_{q i}+R_{i p k l}R_{q j})"></p>
 
         <div>
         <div id="tex">-</div>

@@ -17,6 +17,8 @@ const outputElements = [contra, cov, ein, errors, tex, replaced_tex];
 
 let parser_expression;
 
+let indicesMap = {};
+
 function show(e) {
     e.parentElement.className = "";
 }
@@ -26,12 +28,16 @@ function hide(e) {
 }
 
 function replace() {
-    let r = {};
+    let r = indicesMap;
     fields = document.getElementsByClassName("replace_value");
     for(i of fields) {
         if (i.name != i.value) {
             r[i.name] = i.value;
         }
+    }
+
+    if (Object.keys(r).length > 0) {
+      indicesMap = r;
     }
 
     replacer.set_indicesMap(r);
@@ -78,7 +84,7 @@ input.addEventListener("input", () => {
                 const input = document.createElement("input");
                 input.type = "text";
                 input.name = i;
-                input.value = i;
+                input.value = indicesMap["i"] || i;
                 input.size = 10;
                 input.className = "replace_value";
                 input.addEventListener("input", replace);
@@ -95,7 +101,7 @@ input.addEventListener("input", () => {
                 const input = document.createElement("input");
                 input.type = "text";
                 input.name = i;
-                input.value = i;
+                input.value = indicesMap["i"] || i;
                 input.size = 10;
                 input.className = "replace_value";
                 input.addEventListener("input", replace);
@@ -112,7 +118,7 @@ input.addEventListener("input", () => {
                 const input = document.createElement("input");
                 input.type = "text";
                 input.name = i;
-                input.value = i;
+                input.value = indicesMap["i"] || i;
                 input.size = 10;
                 input.className = "replace_value";
                 input.addEventListener("input", replace);
