@@ -255,18 +255,25 @@ class IndexorInterpreter extends BaseCstVisitor {
     if (ctx.rhs) {
       ctx.rhs.forEach((rhsOperand, idx) => {
         let result_rhs = this.visit(rhsOperand)
+        let operator = ctx.AdditionOperator[idx]
 
-        result_lhs.errors = result_lhs.errors.concat(result_rhs.errors);
+        let pos = operator.startOffset;
+
+        result_lhs.errors = union(result_lhs.errors, result_rhs.errors);
 
         const symdiff_cov = symmetricDifference(result_lhs.cov, result_rhs.cov);
         const symdiff_contra = symmetricDifference(result_lhs.contra, result_rhs.contra);
 
         symdiff_cov.forEach((idc) => {
-          result_lhs.errors.push("Covariant index '" + idc + "' appears only in one term");
+          let side = "left";
+          if (result_rhs.cov.has(idc)) { side = "right" }
+          result_lhs.errors.add("Covariant index '" + idc + "' appears only on the " + side + " of " + operator.image + " (char. " + pos + ")");
         });
 
         symdiff_contra.forEach((idc) => {
-          result_lhs.errors.push("Contravariant index '" + idc + "' appears only in one term");
+          let side = "left";
+          if (result_rhs.contra.has(idc)) { side = "right" }
+          result_lhs.errors.add("Contravariant index '" + idc + "' appears only on the " + side + " of " + operator.image + " (char. " + pos + ")");
         });
 
         result_rhs.ein.forEach((idc) => {
@@ -286,21 +293,21 @@ class IndexorInterpreter extends BaseCstVisitor {
       ctx.rhs.forEach((rhsOperand, idx) => {
         // there will be one operator for each rhs operand
         let result_rhs = this.visit(rhsOperand);
-        result_lhs.errors = result_lhs.errors.concat(result_rhs.errors);
+        result_lhs.errors = union(result_lhs.errors, result_rhs.errors);
 
         const inter_cov = intersection(result_lhs.cov, result_rhs.cov);
         const inter_contra = intersection(result_lhs.contra, result_rhs.contra);
 
         [inter_cov, inter_contra].forEach((inter) => {
           inter.forEach((idc) => {
-            result_lhs.errors.push("index '" + idc + "' appears twice at the same level");
+            result_lhs.errors.add("index '" + idc + "' appears twice at the same level on either sides of a multiplication");
           });
         });
 
         const inter_cov_contra = intersection(result_lhs.cov, result_rhs.contra);
         const inter_contra_cov = intersection(result_lhs.contra, result_rhs.cov);
 
-inter_cov_contra.forEach((idc) => {
+        inter_cov_contra.forEach((idc) => {
           result_lhs.cov.delete(idc);
           result_rhs.contra.delete(idc);
           result_lhs.ein.add(idc);
@@ -309,7 +316,7 @@ inter_cov_contra.forEach((idc) => {
         inter_contra_cov.forEach((idc) => {
           result_lhs.contra.delete(idc);
           result_rhs.cov.delete(idc);
-result_lhs.ein.add(idc);
+          result_lhs.ein.add(idc);
         });
 
         result_rhs.cov.forEach((idc) => {
@@ -322,7 +329,7 @@ result_lhs.ein.add(idc);
       });
     }
 
-return result_lhs;
+  return result_lhs;
   }
 
   atomicExpression(ctx) {
@@ -332,8 +339,8 @@ if (ctx.parenthesisExpression) {
       return this.visit(ctx.parenthesisExpression)
     }
     else if (ctx.NumberLiteral) {
-  // If a key exists on the ctx, at least one element is guaranteed
-return { cov: new Set([]), contra: new Set([]), ein: new Set([]), errors: [] }
+      // If a key exists on the ctx, at least one element is guaranteed
+      return { cov: new Set([]), contra: new Set([]), ein: new Set([]), errors: new Set([]) }
     }
     else if (ctx.fraction) {
       return this.visit(ctx.fraction)
@@ -344,7 +351,7 @@ return { cov: new Set([]), contra: new Set([]), ein: new Set([]), errors: [] }
   }
 
   fraction(ctx) {
-    return { cov: new Set([]), contra: new Set([]), ein: new Set([]), errors: [] }
+    return { cov: new Set([]), contra: new Set([]), ein: new Set([]), errors: new Set([]) }
   }
 
   parenthesisExpression(ctx) {
@@ -354,35 +361,36 @@ return { cov: new Set([]), contra: new Set([]), ein: new Set([]), errors: [] }
   }
 
   subScriptedExpression(ctx) {
+    let image = ctx.literal[0].image;
     if (ctx.cov) {
-      const result_cov = this.visit(ctx.cov);
+      const result_cov = this.visit(ctx.cov, image);
       return result_cov;
     } else {
-return {idx: new Set([]), errors: []};
+      return {idx: new Set([]), errors: new Set([]), image:image};
     }
   }
 
-  commaScriptExpression(ctx) {
+  commaScriptExpression(ctx, image) {
     if (ctx.cov) {
-      return this.visit(ctx.cov);
+      return this.visit(ctx.cov, image);
     } else {
-return this.visit(ctx.comma);
+      return this.visit(ctx.comma, image);
     }
   }
 
-  commaPrefixedExpression(ctx) {
-    return this.visit(ctx.rhs);
+  commaPrefixedExpression(ctx, image) {
+    return this.visit(ctx.rhs, image);
   }
 
-  commaInfixedExpression(ctx) {
-    let result_lhs = this.visit(ctx.lhs);
+  commaInfixedExpression(ctx, image) {
+    let result_lhs = this.visit(ctx.lhs, image);
     if (ctx.rhs) {
-      const result_rhs = this.visit(ctx.rhs);
-      result_lhs.errors = result_lhs.errors.concat(result_rhs.errors);
+      const result_rhs = this.visit(ctx.rhs, image);
+      result_lhs.errors = union(result_lhs.errors, result_rhs.errors);
       const intersec = intersection(result_rhs.idx, result_lhs.idx).size;
       if (intersec.size > 0) {
         intersec.forEach((idc) => {
-          result_lhs.errors.push("index '" + idc + "' appears twice at the same level");
+          result_lhs.errors.add("index '" + idc + "' appears twice at the same level of " + image);
         });
       }
       result_rhs.idx.forEach((idc) => {
@@ -396,9 +404,9 @@ return this.visit(ctx.comma);
     let result_lower = this.visit(ctx.lower);
     let result_upper;
     if (ctx.contra) {
-      result_upper = this.visit(ctx.contra);
+      result_upper = this.visit(ctx.contra, result_lower.image);
     } else {
-      result_upper = {idx: new Set([]), errors: []};
+      result_upper = {idx: new Set([]), errors: new Set([])};
     }
 
     // check for repeated indices
@@ -412,24 +420,24 @@ return this.visit(ctx.comma);
       cov: result_lower.idx,
       contra: result_upper.idx,
       ein: ein,
-      errors: result_lower.errors.concat(result_upper.errors)
+      errors: union(result_lower.errors, result_upper.errors)
     };
 
     return result
   }
 
-  indicesExpression(ctx) {
+  indicesExpression(ctx, image) {
     const current_idx = ctx.head[0].image;
     if (ctx.tail) {
-      const tailResult = this.visit(ctx.tail);
+      const tailResult = this.visit(ctx.tail, image);
       if (!tailResult.idx.has(current_idx)) {
         tailResult.idx.add(current_idx);
       } else {
-        tailResult.errors.push("index '" + current_idx + "' appears twice at the same level");
+        tailResult.errors.add("index '" + current_idx + "' appears twice at the same level of " + image);
       }
       return tailResult;
     } else {
-      return {idx: new Set([current_idx]), errors: []};
+      return {idx: new Set([current_idx]), errors: new Set([])};
     }
   }
 }

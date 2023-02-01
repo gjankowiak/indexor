@@ -73,75 +73,75 @@ input.addEventListener("input", () => {
             errors.appendChild(i);
         });
 
-        if (r.errors.length > 0) {
+        if (r.errors.size > 0) {
             show(errors);
-        } else {
-            r.cov_list.forEach((i) => {
-                const e = document.createElement("li");
-                const text = document.createElement("span");
-                text.textContent = i + " → ";
-                text.className = "replace_target";
-                const input = document.createElement("input");
-                input.type = "text";
-                input.name = i;
-                input.value = indicesMap["i"] || i;
-                input.size = 10;
-                input.className = "replace_value";
-                input.addEventListener("input", replace);
-                e.appendChild(text);
-                e.appendChild(input);
-                cov.appendChild(e);
-            });
-
-            r.contra_list.forEach((i) => {
-                const e = document.createElement("li");
-                const text = document.createElement("span");
-                text.textContent = i + " → ";
-                text.className = "replace_target";
-                const input = document.createElement("input");
-                input.type = "text";
-                input.name = i;
-                input.value = indicesMap["i"] || i;
-                input.size = 10;
-                input.className = "replace_value";
-                input.addEventListener("input", replace);
-                e.appendChild(text);
-                e.appendChild(input);
-                contra.appendChild(e);
-            });
-
-            r.ein_list.forEach((i) => {
-                const e = document.createElement("li");
-                const text = document.createElement("span");
-                text.textContent = i + " → ";
-                text.className = "replace_target";
-                const input = document.createElement("input");
-                input.type = "text";
-                input.name = i;
-                input.value = indicesMap["i"] || i;
-                input.size = 10;
-                input.className = "replace_value";
-                input.addEventListener("input", replace);
-                e.appendChild(text);
-                e.appendChild(input);
-                ein.appendChild(e);
-            });
-            if (r.cov_list.length > 0) {
-              show(cov);
-            }
-            if (r.contra_list.length > 0) {
-              show(contra);
-            }
-            if (r.ein_list.length > 0) {
-              show(ein);
-            }
-
-            let mj_options = MathJax.getMetricsFor(tex, true);
-            const mj_tex = MathJax.tex2svg(input.value, mj_options);
-            tex.appendChild(mj_tex);
-            show(tex);
-            replace();
         }
+
+        r.cov_list.forEach((i) => {
+            const e = document.createElement("li");
+            const text = document.createElement("span");
+            text.textContent = i + " → ";
+            text.className = "replace_target";
+            const input = document.createElement("input");
+            input.type = "text";
+            input.name = i;
+            input.value = indicesMap["i"] || i;
+            input.size = 10;
+            input.className = "replace_value";
+            input.addEventListener("input", replace);
+            e.appendChild(text);
+            e.appendChild(input);
+            cov.appendChild(e);
+        });
+
+        r.contra_list.forEach((i) => {
+            const e = document.createElement("li");
+            const text = document.createElement("span");
+            text.textContent = i + " → ";
+            text.className = "replace_target";
+            const input = document.createElement("input");
+            input.type = "text";
+            input.name = i;
+            input.value = indicesMap["i"] || i;
+            input.size = 10;
+            input.className = "replace_value";
+            input.addEventListener("input", replace);
+            e.appendChild(text);
+            e.appendChild(input);
+            contra.appendChild(e);
+        });
+
+        r.ein_list.forEach((i) => {
+            const e = document.createElement("li");
+            const text = document.createElement("span");
+            text.textContent = i + " → ";
+            text.className = "replace_target";
+            const input = document.createElement("input");
+            input.type = "text";
+            input.name = i;
+            input.value = indicesMap["i"] || i;
+            input.size = 10;
+            input.className = "replace_value";
+            input.addEventListener("input", replace);
+            e.appendChild(text);
+            e.appendChild(input);
+            ein.appendChild(e);
+        });
+        if (r.cov_list.length > 0) {
+          show(cov);
+        }
+        if (r.contra_list.length > 0) {
+          show(contra);
+        }
+        if (r.ein_list.length > 0) {
+          show(ein);
+        }
+
+        let mj_options = MathJax.getMetricsFor(tex, true);
+        const mj_tex = MathJax.tex2svg(input.value, mj_options);
+        tex.appendChild(mj_tex);
+        show(tex);
+        replace();
 
     } else {
         parser.errors.forEach((e) => {
