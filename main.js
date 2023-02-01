@@ -126,9 +126,15 @@ input.addEventListener("input", () => {
                 e.appendChild(input);
                 ein.appendChild(e);
             });
-            show(cov);
-            show(contra);
-            show(ein);
+            if (r.cov_list.length > 0) {
+              show(cov);
+            }
+            if (r.contra_list.length > 0) {
+              show(contra);
+            }
+            if (r.ein_list.length > 0) {
+              show(ein);
+            }
 
             let mj_options = MathJax.getMetricsFor(tex, true);
             const mj_tex = MathJax.tex2svg(input.value, mj_options);
