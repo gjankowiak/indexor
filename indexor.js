@@ -180,7 +180,7 @@ class IndexorPure extends CstParser {
     });
 
     $.RULE("commaPrefixedExpression", () => {
-      $.CONSUME(DiffOperator);
+      $.CONSUME(DiffOperator, {LABEL:"diffop"});
       $.SUBRULE($.indicesExpression, {LABEL: "rhs"});
     });
 
@@ -453,7 +453,12 @@ class IndexorReplacer extends BaseCstVisitor {
 
   set_indicesMap(indicesMap) {
     this.indicesMap = indicesMap
-    this.indices = new Set(Object.keys(this.indicesMap))
+    this.indices.clear()
+    Object.keys(this.indicesMap).forEach((idc) => {
+      if (this.indicesMap[idc]) {
+        this.indices.add(idc)
+      }
+    });
   }
 
   expression(ctx) {

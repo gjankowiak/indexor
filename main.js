@@ -10,6 +10,8 @@ const replaced_tex = document.getElementById("replaced_tex");
 
 const errors = document.getElementById("errors");
 
+const clear_btn = document.getElementById("clear_btn");
+
 const visitor = new IndexorInterpreter();
 const replacer = new IndexorReplacer();
 
@@ -28,7 +30,7 @@ function hide(e) {
 }
 
 function replace() {
-    let r = indicesMap;
+    let r = {};
     fields = document.getElementsByClassName("replace_value");
     for(i of fields) {
         if (i.name != i.value) {
@@ -52,8 +54,19 @@ function replace() {
     show(replaced_tex);
 }
 
+function clearMap() {
+    indicesMap = {};
+    fields = document.getElementsByClassName("replace_value");
+    for(i of fields) {
+        i.value = ""
+    }
+    replace()
+}
+
 input.addEventListener("input", () => {
-    if (input.value.length == 0) { return; }
+    if (input.value.length == 0) {
+      return;
+    }
     lexResult = IndexorLexer.tokenize(input.value);
 
     parser.input = lexResult.tokens
@@ -63,6 +76,8 @@ input.addEventListener("input", () => {
         e.replaceChildren();
         hide(e);
     });
+
+    hide(clear_btn);
 
     if (parser.errors.length == 0) {
         r = visitor.visit(parser_expression);
@@ -85,7 +100,7 @@ input.addEventListener("input", () => {
             const input = document.createElement("input");
             input.type = "text";
             input.name = i;
-            input.value = indicesMap["i"] || i;
+            input.value = indicesMap[i] || "";
             input.size = 10;
             input.className = "replace_value";
             input.addEventListener("input", replace);
@@ -102,7 +117,7 @@ input.addEventListener("input", () => {
             const input = document.createElement("input");
             input.type = "text";
             input.name = i;
-            input.value = indicesMap["i"] || i;
+            input.value = indicesMap[i] || "";
             input.size = 10;
             input.className = "replace_value";
             input.addEventListener("input", replace);
@@ -119,7 +134,7 @@ input.addEventListener("input", () => {
             const input = document.createElement("input");
             input.type = "text";
             input.name = i;
-            input.value = indicesMap["i"] || i;
+            input.value = indicesMap[i] || "";
             input.size = 10;
             input.className = "replace_value";
             input.addEventListener("input", replace);
@@ -129,12 +144,15 @@ input.addEventListener("input", () => {
         });
         if (r.cov_list.length > 0) {
           show(cov);
+          show(clear_btn)
         }
         if (r.contra_list.length > 0) {
           show(contra);
+          show(clear_btn)
         }
         if (r.ein_list.length > 0) {
           show(ein);
+          show(clear_btn)
         }
 
         let mj_options = MathJax.getMetricsFor(tex, true);
@@ -161,6 +179,8 @@ input.addEventListener("input", () => {
         }
     }
 });
+
+clear_btn.addEventListener("click", clearMap)
 
 input.dispatchEvent(new Event("input"));
 }
