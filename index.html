@@ -1,96 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Indexor</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- <link href="css/style.css" rel="stylesheet"> -->
-        <!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> -->
-        <script id="MathJax-script" src="tex-mml-svg.js"></script>
-        <script src="chevrotain.min.js"></script>
-    </head>
-    <body>
-      <div>
-        <details open>
-        <summary>Instructions</summary>
-          <ul id="instructions_list">
-            <li>Input is LaTeX-like (see example), some commands allowed.</li>
-            <li>Identifiers ("tensors" and indices) can be sequences of letter from a to z (lower- or uppercase).</li>
-            <li><i>Indices must be separated by spaces.</i></li>
-            <li>Only operators supported are + - * and =. Fractions from integers only.</li>
-            <li>Multiplication is implicit.</li>
-            <li>No indices after parentheses.</li>
-            <li>Sub-/supercript are written with _{indices} and ^{indices}, <i>in that order</i>.</li>
-            <li>LaTeX commands can be used in the replacement rule (\alpha, etc.).
-          </ul>
-        </details>
-        <p>Input:
-        <input type="text" id="input" size=100 value="\Delta R_{i j k l} + 2(B_{i j k l} - B_{i j l k} - B_{i l j k} + B_{i k j l}) = R_{j l;k i}-R_{j k,l i}-R_{i l;k j}+R_{i k;l j}+g^{p q}(R_{p j k l}R_{q i}+R_{i p k l}R_{q j})"></p>
+  <head>
+    <title>Indexor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link href="css/style.css" rel="stylesheet"> -->
+    <!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> -->
+    <!-- <script id="MathJax-script" src="tex-mml-svg.js"></script> -->
+    <script src="chevrotain.min.js"></script>
+  </head>
+  <body>
+    <div><h1>Input:</h1>
+      <input type="text" id="input" value="\Delta R_{i j k l} + 2(B_{i j k l} - B_{i j l k} - B_{i l j k} + B_{i k j l}) = R_{j l;k i}-R_{j k,l i}-R_{i l;k j}+R_{i k;l j}+g^{p q}(R_{p j k l}R_{q i}+R_{i p k l}R_{q j})">
+    </div>
 
-        <div>
-        <div id="tex">-</div>
-        </div>
+    <div>
+      <div id="tex"></div>
+    </div>
 
-        <div class="hidden">
-          <button id="clear_btn">Clear replacement rules</button>
-        </div>
+    <div>
+      <h1>Output</h1>
+      <div id="replaced_tex"></div>
+    </div>
 
-        <div class="hidden">
+    <div>
+      <!-- <div class="hidden"> -->
+      <h1 class="hidden">Replacement rules <button id="clear_btn">clear</button></h1>
+      <!-- </div> -->
+
+      <div class="hidden">
         Covariant indices: <ul id="cov"></ul>
-        </div>
+      </div>
 
-        <div class="hidden">
+      <div class="hidden">
         Contravariant indices: <ul id="contra"></ul>
-        </div>
+      </div>
 
-        <div class="hidden">
+      <div class="hidden">
         Einstein sum indices: <ul id="ein"></ul>
-        </div>
+      </div>
 
-        <div class="hidden">
-            <h3>Errors</h3>
-            <ul id="errors"></ul>
-        </div>
+      <div class="hidden">
+        <h1>Errors</h1>
+        <ul id="errors"></ul>
+      </div>
+    </div>
 
-        <div>
-        <div id="replaced_tex">-</div>
-        </div>
+    <h1>Instructions</h1>
+    <ul id="instructions_list">
+      <li>Input is LaTeX-like (see example), some commands allowed.</li>
+      <li>Identifiers ("tensors" and indices) can be sequences of letter from a to z (lower- or uppercase).</li>
+      <li><i>Indices must be separated by spaces.</i></li>
+      <li>Only operators supported are + - * and =. Fractions from integers only.</li>
+      <li>Multiplication is implicit.</li>
+      <li>No indices after parentheses.</li>
+      <li>Sub-/supercript are written with _{indices} and ^{indices}, <i>in that order</i>.</li>
+      <li>LaTeX commands can be used in the replacement rule (\alpha, etc.).
+    </ul>
 
-    <style>
-    body { font-size: 1.2em; font-family: sans; }
-    input { font-size: 1.0em; border: none; background-color: #eee; }
-    p { margin-top: 1em; }
-    .replace_value { padding: 0.2em; padding-left: 0.5em;}
-    .replace_target { text-align: right; display: inline-block; width: 3em; margin-right: 0.5em;}
-    li { margin-bottom: 0.2em; }
-    .hidden { display: none; }
-    #input { padding: 0.5em; }
-    ul { list-style: none; }
-    ul#instructions_list { list-style: circle; font-size: 0.8em; }
-    #clear_btn { margin-bottom: 1em; }
+    <style scoped>
+h1 { font-size: 1em;}
+body { font-size: 1.2em; font-family: sans; }
+input { font-size: 1.0em; border: none; background-color: #eee; }
+p { margin-top: 1em; margin-left: 0.5em; }
+.replace_value { padding: 0.2em; padding-left: 0.5em;}
+.replace_target { text-align: right; display: inline-block; width: 3em; margin-right: 0.5em;}
+li { margin-bottom: 0.2em; }
+.hidden { display: none; }
+#input { padding: 0.5em; width: calc(100% - 1em)}
+ul { list-style: none; }
+ul#instructions_list { list-style: circle; font-size: 0.8em; }
+#clear_btn { margin-bottom: 1em; }
+#tex, #replaced_tex { border-left: 5px #9494FF solid; padding: 1px; margin: 10px 0;}
+.MathJax { margin: 0.5em 0!important; }
     </style>
-    
-
-  <script>
-  MathJax = {
-    startup: {
-      ready: () => {
-        MathJax.startup.defaultReady();
-        MathJax.startup.promise.then(() => {
-          bootstrap();
-        });
-      }
-    },
-    tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']]
-    },
-    svg: {
-      fontCache: 'global'
-    }
-  };
-  </script>
+    <script>
+      MathJax = {
+        startup: {
+          ready: () => {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(() => {
+              bootstrap();
+            });
+          }
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        svg: {
+          fontCache: 'global',
+          displayAlign: 'left',
+          displayIndent: '0.5em'
+        }
+      };
+    </script>
     <script id="MathJax-script" src="tex-mml-svg.js" async></script>
     <script src="indexor.js"></script>
     <script src="main.js"></script>
-    </body>
+  </body>
 </html>

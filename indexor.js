@@ -106,6 +106,9 @@ class IndexorPure extends CstParser {
     const $ = this;
 
     $.RULE("expression", () => {
+      $.OPTION(() => {
+        $.CONSUME(Minus);
+      });
       $.SUBRULE($.additionExpression)
     });
 
@@ -255,12 +258,17 @@ class IndexorInterpreter extends BaseCstVisitor {
     if (ctx.rhs) {
       ctx.rhs.forEach((rhsOperand, idx) => {
         let result_rhs = this.visit(rhsOperand)
+
+        // operator might be = + or -
         let operator = ctx.AdditionOperator[idx]
 
+        // get the operator offset to make error reporting more helpful
         let pos = operator.startOffset;
 
+        // propagate errors from the rhs
         result_lhs.errors = union(result_lhs.errors, result_rhs.errors);
 
+        // check that all indices appear on each side at the same level
         const symdiff_cov = symmetricDifference(result_lhs.cov, result_rhs.cov);
         const symdiff_contra = symmetricDifference(result_lhs.contra, result_rhs.contra);
 
@@ -276,6 +284,19 @@ class IndexorInterpreter extends BaseCstVisitor {
           result_lhs.errors.add("Contravariant index '" + idc + "' appears only on the " + side + " of " + operator.image + " (char. " + pos + ")");
         });
 
+        // add indices from the rhs to the lhs
+        // this is not needed for a correct expression
+        // but avoids resetting the replacement rule if an
+        // index is delete from the lhs and added again
+        result_rhs.cov.forEach((idc) => {
+          result_lhs.cov.add(idc);
+        });
+
+        result_rhs.contra.forEach((idc) => {
+          result_lhs.contra.add(idc);
+        });
+
+        // Einstein sum indices are simply carried over to the lhs
         result_rhs.ein.forEach((idc) => {
           result_lhs.ein.add(idc);
         });
@@ -293,8 +314,11 @@ class IndexorInterpreter extends BaseCstVisitor {
       ctx.rhs.forEach((rhsOperand, idx) => {
         // there will be one operator for each rhs operand
         let result_rhs = this.visit(rhsOperand);
+
+        // propagate errors from the rhs
         result_lhs.errors = union(result_lhs.errors, result_rhs.errors);
 
+        // check that an index does not appear twice as covariant or contravariant
         const inter_cov = intersection(result_lhs.cov, result_rhs.cov);
         const inter_contra = intersection(result_lhs.contra, result_rhs.contra);
 
@@ -304,6 +328,7 @@ class IndexorInterpreter extends BaseCstVisitor {
           });
         });
 
+        // convert indices that appear both upstairs and downstairs to Einstein sum indices
         const inter_cov_contra = intersection(result_lhs.cov, result_rhs.contra);
         const inter_contra_cov = intersection(result_lhs.contra, result_rhs.cov);
 
@@ -319,12 +344,17 @@ class IndexorInterpreter extends BaseCstVisitor {
           result_lhs.ein.add(idc);
         });
 
+        // carry all indices over to the lhs
         result_rhs.cov.forEach((idc) => {
           result_lhs.cov.add(idc);
         });
 
         result_rhs.contra.forEach((idc) => {
           result_lhs.contra.add(idc);
+        });
+
+        result_rhs.ein.forEach((idc) => {
+          result_lhs.ein.add(idc);
         });
       });
     }
@@ -462,7 +492,12 @@ class IndexorReplacer extends BaseCstVisitor {
   }
 
   expression(ctx) {
-    return this.visit(ctx.additionExpression);
+    let r = "";
+    if (ctx.Minus) {
+      r = "-";
+    }
+    r += this.visit(ctx.additionExpression);
+    return r;
   }
 
   additionExpression(ctx) {
