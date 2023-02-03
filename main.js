@@ -16,6 +16,7 @@ const visitor = new IndexorInterpreter();
 const replacer = new IndexorReplacer();
 
 const outputElements = [contra, cov, ein, errors, tex, replaced_tex];
+const hideableOutputElements = [contra, cov, ein, errors];
 
 let parser_expression;
 
@@ -51,7 +52,7 @@ function replace() {
 
     replaced_tex.replaceChildren();
     replaced_tex.appendChild(mj_tex);
-    show(replaced_tex);
+    //show(replaced_tex);
 }
 
 function clearMap() {
@@ -74,8 +75,9 @@ input.addEventListener("input", () => {
 
     outputElements.map((e) => {
         e.replaceChildren();
-        hide(e);
     });
+
+    hideableOutputElements.map((e) => hide(e));
 
     hide(clear_btn);
 
