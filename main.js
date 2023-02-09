@@ -7,6 +7,9 @@ const ein = document.getElementById("ein");
 
 const tex = document.getElementById("tex");
 const replaced_tex = document.getElementById("replaced_tex");
+const replaced_tex_plain = document.getElementById("replaced_tex_plain");
+
+const saved_expressions = document.getElementById("saved_expressions")
 
 const errors = document.getElementById("errors");
 
@@ -22,6 +25,38 @@ let parser_expression;
 
 let indicesMap = {};
 
+let save_counter = 0;
+
+let saved_expressions_list = [];
+
+function storageAvailable(type) {
+    let storage;
+    try {
+        storage = window[type];
+        const x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    }
+    catch (e) {
+        return e instanceof DOMException && (
+            // everything except Firefox
+            e.code === 22 ||
+            // Firefox
+            e.code === 1014 ||
+            // test name field too, because code might not be present
+            // everything except Firefox
+            e.name === 'QuotaExceededError' ||
+            // Firefox
+            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            (storage && storage.length !== 0);
+    }
+}
+
+const has_localstorage = storageAvailable("localStorage")
+
+
 function show(e) {
     e.parentElement.className = "";
 }
@@ -30,6 +65,80 @@ function hide(e) {
     e.parentElement.className = "hidden";
 }
 
+function save() {
+    const e = input.value;
+    for (se of saved_expressions_list) {
+      if (e === se.tex) {
+        alert("This expression is aready saved!");
+        return;
+      }
+    };
+    new_expression = {
+      id: save_counter++,
+      svg: tex.childNodes[0].cloneNode(true),
+      tex: e
+    };
+
+    insert_saved_expression(new_expression);
+
+    saved_expressions_list.push(new_expression);
+}
+
+function restore_saved_expression(eid) {
+  for (e of saved_expressions_list) {
+      if (e.id == eid) {
+        input.value = e.tex
+        input.dispatchEvent(new Event("input"));
+        return
+      }
+    }
+}
+
+function insert_saved_expression(e) {
+  const d = document.createElement("li");
+  d.className = "saved_expr"
+  d.setAttribute("eid", e.id);
+
+  const restore_btn = document.createElement("button");
+  restore_btn.textContent = "restore"
+  restore_btn.className = "restore btn";
+  restore_btn.addEventListener("click", () => restore_saved_expression(e.id))
+
+  const delete_btn = document.createElement("button");
+  delete_btn.textContent = "delete"
+  delete_btn.className = "delete btn";
+  delete_btn.addEventListener("click", () => delete_saved_expression(e.id))
+  
+  const mj_output = document.createElement("div")
+  mj_output.className = "tex"
+  mj_output.appendChild(e.svg);
+  
+  const tex_expr = document.createElement("div")
+  tex_expr.className = "replaced_tex_plain";
+  tex_expr.textContent = e.tex;
+
+  d.appendChild(mj_output);
+  d.appendChild(tex_expr);
+  d.appendChild(restore_btn);
+  d.appendChild(delete_btn);
+
+  saved_expressions.appendChild(d);
+
+  show(saved_expressions);
+}
+
+function delete_saved_expression(eid) {
+  saved_expressions.childNodes.forEach((e) => {
+    if (e.attributes.eid.value == eid) {
+      e.remove()
+    }
+  })  
+
+  saved_expressions_list = saved_expressions_list.filter((e) => {
+      return e.id != eid;
+  })
+}
+ 
 function replace() {
     let r = {};
     fields = document.getElementsByClassName("replace_value");
@@ -49,6 +158,8 @@ function replace() {
 
     let mj_options = MathJax.getMetricsFor(replaced_tex, true);
     const mj_tex = MathJax.tex2svg(r, mj_options);
+
+    replaced_tex_plain.textContent = r;
 
     replaced_tex.replaceChildren();
     replaced_tex.appendChild(mj_tex);
@@ -183,6 +294,8 @@ input.addEventListener("input", () => {
 });
 
 clear_btn.addEventListener("click", clearMap)
+
+save_btn.addEventListener("click", save)
 
 input.dispatchEvent(new Event("input"));
 }
