@@ -1,4 +1,4 @@
-function bootstrap() {
+function startindexor() {
 const input = document.getElementById("input");
 
 const contra = document.getElementById("contra");
@@ -101,17 +101,17 @@ function restore_saved_expression(eid) {
 
 function insert_saved_expression(e) {
   const d = document.createElement("li");
-  d.className = "saved_expr"
+  d.className = "saved_expr list-group-item"
   d.setAttribute("eid", e.id);
 
   const restore_btn = document.createElement("button");
   restore_btn.textContent = "restore"
-  restore_btn.className = "restore btn";
+  restore_btn.className = "btn-outline-secondary btn btn-sm";
   restore_btn.addEventListener("click", () => restore_saved_expression(e.id))
 
   const delete_btn = document.createElement("button");
   delete_btn.textContent = "delete"
-  delete_btn.className = "delete btn";
+  delete_btn.className = "btn-outline-danger btn btn-sm";
   delete_btn.addEventListener("click", () => delete_saved_expression(e.id))
   
   const mj_output = document.createElement("div")
@@ -220,6 +220,7 @@ input.addEventListener("input", () => {
 
         r.cov_list.forEach((i) => {
             const e = document.createElement("li");
+            e.className = "list-group-item";
             const text = document.createElement("span");
             text.textContent = i + " → ";
             text.className = "replace_target";
@@ -237,6 +238,7 @@ input.addEventListener("input", () => {
 
         r.contra_list.forEach((i) => {
             const e = document.createElement("li");
+            e.className = "list-group-item";
             const text = document.createElement("span");
             text.textContent = i + " → ";
             text.className = "replace_target";
@@ -254,6 +256,7 @@ input.addEventListener("input", () => {
 
         r.ein_list.forEach((i) => {
             const e = document.createElement("li");
+            e.className = "list-group-item";
             const text = document.createElement("span");
             text.textContent = i + " → ";
             text.className = "replace_target";
@@ -284,7 +287,6 @@ input.addEventListener("input", () => {
         let mj_options = MathJax.getMetricsFor(tex, true);
         const mj_tex = MathJax.tex2svg(input.value, mj_options);
         tex.appendChild(mj_tex);
-        show(tex);
         replace();
 
     } else {
