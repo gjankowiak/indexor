@@ -20,7 +20,7 @@ const visitor = new IndexorInterpreter();
 const replacer = new IndexorReplacer();
 
 const outputElements = [contra, cov, ein, errors, tex, replaced_tex];
-const hideableOutputElements = [contra, cov, ein, errors];
+const hideableOutputElements = [errors];
 
 let current_replaced_tex = "";
 
@@ -63,11 +63,11 @@ const has_localstorage = storageAvailable("localStorage")
 
 
 function show(e) {
-    e.parentElement.className = "";
+    e.parentElement.classList.remove("hidden");
 }
 
 function hide(e) {
-    e.parentElement.className = "hidden";
+    e.parentElement.classList.add("hidden");
 }
 
 function save() {
@@ -106,20 +106,20 @@ function insert_saved_expression(e) {
 
   const restore_btn = document.createElement("button");
   restore_btn.textContent = "restore"
-  restore_btn.className = "btn-outline-secondary btn btn-sm";
+  restore_btn.className = "btn-outline-secondary btn btn-sm m-1";
   restore_btn.addEventListener("click", () => restore_saved_expression(e.id))
 
   const delete_btn = document.createElement("button");
   delete_btn.textContent = "delete"
-  delete_btn.className = "btn-outline-danger btn btn-sm";
+  delete_btn.className = "btn-outline-danger btn btn-sm m-1";
   delete_btn.addEventListener("click", () => delete_saved_expression(e.id))
   
   const mj_output = document.createElement("div")
   mj_output.className = "tex"
   mj_output.appendChild(e.svg);
   
-  const tex_expr = document.createElement("div")
-  tex_expr.className = "replaced_tex_plain";
+  const tex_expr = document.createElement("code")
+  tex_expr.className = "m-1 d-block";
   tex_expr.textContent = e.tex;
 
   d.appendChild(mj_output);
@@ -142,6 +142,10 @@ function delete_saved_expression(eid) {
   saved_expressions_list = saved_expressions_list.filter((e) => {
       return e.id != eid;
   })
+
+  if (saved_expressions_list.length == 0) {
+      hide(saved_expressions);
+  }
 }
  
 function replace() {
@@ -272,15 +276,12 @@ input.addEventListener("input", () => {
             ein.appendChild(e);
         });
         if (r.cov_list.length > 0) {
-          show(cov);
           show(clear_btn)
         }
         if (r.contra_list.length > 0) {
-          show(contra);
           show(clear_btn)
         }
         if (r.ein_list.length > 0) {
-          show(ein);
           show(clear_btn)
         }
 

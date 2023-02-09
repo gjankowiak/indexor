@@ -19,12 +19,17 @@
         <input type="text" id="input" class="form-control" aria-describedby="tex-label"
         aria-label="tex" value="\Delta R_{i j k l} + 2(B_{i j k l} - B_{i j l k} - B_{i l j k} + B_{i k j l}) = R_{j l;k i}-R_{j k,l i}-R_{i l;k j}+R_{i k;l j}+g^{p q}(R_{p j k l}R_{q i}+R_{i p k l}R_{q j})">
       </div>
-      <div id="tex" class="text-black bg-primary rounded p-1" style="--bs-bg-opacity: 0.5">MathJax is loading...</div>
+      <div id="tex" class="text-black bg-primary rounded p-1" style="--bs-bg-opacity: 0.3">MathJax is loading...</div>
     </div>
+
+      <div class="hidden m-1 border border-danger rounded" style="--bs-bg-opacity: 0.3;">
+        <h5 class="bg-danger p-2 text-white">Errors</h5>
+        <ul id="errors"></ul>
+      </div>
 
     <div id="replaced_tex_wrapper" class="bg-primary p-2 m-1 border border-secondary rounded" style="--bs-bg-opacity:0.0; --bs-border-opacity: 0.3">
       <h5>Output</h5>
-      <div id="replaced_tex" class="text-black bg-primary rounded p-1" style="--bs-bg-opacity:0.5">MathJax is loading...</div>
+      <div id="replaced_tex" class="text-black bg-primary rounded p-1" style="--bs-bg-opacity:0.3">MathJax is loading...</div>
       <code id="replaced_tex_plain" class="p-1"></code>
       <div class="form-check">
         <input class="form-check-input" id="spaces_checkbox" type="checkbox" value="">
@@ -35,25 +40,23 @@
     <div id="rules_wrapper" class="bg-primary p-2 m-1 border border-secondary rounded" style="--bs-bg-opacity:0.0; --bs-border-opacity: 0.3">
       <h5 class="hidden">Replacement rules <button id="clear_btn" class="btn btn-sm btn-outline-secondary">clear</button></h5>
 
-      <div class="hidden">
-        Covariant indices: <ul id="cov"></ul>
+      <div class="row align-items-start">
+      <div class="col">
+        Covariant indices: <ul id="cov" class=></ul>
       </div>
 
-      <div class="hidden">
+      <div class="col">
         Contravariant indices: <ul id="contra"></ul>
       </div>
 
-      <div class="hidden">
+      <div class="col">
         Einstein sum indices: <ul id="ein"></ul>
+      </div>
       </div>
     </div>
 
-      <div class="hidden">
-        <h5>Errors</h5>
-        <ul id="errors"></ul>
-      </div>
 
-      <div class="hidden">
+      <div class="hidden p-2 m-1 border border-secondary rounded" style="--bs-border-opacity:0.3">
         <h5>Saved expressions</h5>
         <ul id="saved_expressions" class="list-group"></ul>
       </div>
