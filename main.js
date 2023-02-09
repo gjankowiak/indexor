@@ -8,6 +8,7 @@ const ein = document.getElementById("ein");
 const tex = document.getElementById("tex");
 const replaced_tex = document.getElementById("replaced_tex");
 const replaced_tex_plain = document.getElementById("replaced_tex_plain");
+const spaces_cb = document.getElementById("spaces_checkbox");
 
 const saved_expressions = document.getElementById("saved_expressions")
 
@@ -21,6 +22,8 @@ const replacer = new IndexorReplacer();
 const outputElements = [contra, cov, ein, errors, tex, replaced_tex];
 const hideableOutputElements = [contra, cov, ein, errors];
 
+let current_replaced_tex = "";
+
 let parser_expression;
 
 let indicesMap = {};
@@ -28,6 +31,8 @@ let indicesMap = {};
 let save_counter = 0;
 
 let saved_expressions_list = [];
+
+const regex = /(\\[a-zA-Z]+) ([a-zA-Z0-9])/gm;
 
 function storageAvailable(type) {
     let storage;
@@ -154,16 +159,24 @@ function replace() {
 
     replacer.set_indicesMap(r);
 
-    r = replacer.visit(parser_expression);
+    current_replaced_tex = replacer.visit(parser_expression);
 
     let mj_options = MathJax.getMetricsFor(replaced_tex, true);
-    const mj_tex = MathJax.tex2svg(r, mj_options);
+    const mj_tex = MathJax.tex2svg(current_replaced_tex, mj_options);
 
-    replaced_tex_plain.textContent = r;
+    replaced_tex_plain.textContent = spaces_cb.checked ? remove_tex_spaces(current_replaced_tex) : current_replaced_tex;
 
     replaced_tex.replaceChildren();
     replaced_tex.appendChild(mj_tex);
-    //show(replaced_tex);
+}
+
+function remove_tex_spaces(tex) {
+  let res = tex.replaceAll(regex, "$1¶ $2").replaceAll(" ", "").replaceAll("¶", " ");
+  return res;
+}
+
+function toggleSpaces() {
+    replaced_tex_plain.textContent = spaces_cb.checked ? remove_tex_spaces(current_replaced_tex) : current_replaced_tex;
 }
 
 function clearMap() {
@@ -292,6 +305,8 @@ input.addEventListener("input", () => {
         }
     }
 });
+
+spaces_cb.addEventListener("click", toggleSpaces)
 
 clear_btn.addEventListener("click", clearMap)
 
