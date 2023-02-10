@@ -75,8 +75,10 @@ const SubScript = createToken({name: "SubScript", pattern: /_/, categories: Scri
 const LBracket = createToken({name: "LBracket", pattern: /{/});
 const RBracket = createToken({name: "RBracket", pattern: /}/});
 
-const NumberLiteral = createToken({name: "NumberLiteral", pattern: /[1-9]\d*/});
-const AlphaLiteral = createToken({name: "AlphaLiteral", pattern: /\\?[a-zA-Z]+/});
+const Literal = createToken({name: "Literal", pattern: Lexer.NA});
+const NumberLiteral = createToken({name: "NumberLiteral", pattern: /[1-9]\d*/, categories: Literal});
+const AlphaLiteral = createToken({name: "AlphaLiteral", pattern: /\\?[a-zA-Z]+/, categories: Literal});
+
 const Fraction = createToken({name: "Fraction", pattern: /\\frac/, longer_alt: AlphaLiteral});
 
 const DiffOperator = createToken({name: "DiffOperator", pattern: Lexer.NA});
@@ -92,7 +94,7 @@ const WhiteSpace = createToken({
 
 const allTokens = [WhiteSpace, // whitespace is normally very common so it should be placed first to speed up the lexer's performance
   Plus, Minus, Multi, Equal, LParen, RParen, SubScript, SupScript, LBracket, RBracket,
-  Fraction,
+  Fraction, Literal,
   AlphaLiteral, NumberLiteral, AdditionOperator, MultiplicationOperator, ScriptOperator, DiffOperator, Comma, Colon];
 const IndexorLexer = new Lexer(allTokens);
 
@@ -138,18 +140,20 @@ class IndexorPure extends CstParser {
       // parenthesisExpression has the highest precedence and thus it appears
       // in the "lowest" leaf in the expression ParseTree.
       {ALT: () => $.SUBRULE($.parenthesisExpression)},
-      {ALT: () => $.CONSUME(NumberLiteral)},
+      //{ALT: () => $.CONSUME(NumberLiteral)},
       {ALT: () => $.SUBRULE($.fraction)},
-      {ALT: () => $.SUBRULE($.supScriptedExpression)}
+      //{ALT: () => $.CONSUME(AlphaLiteral)},
+      {ALT: () => $.SUBRULE($.subExpr)}
+      //{ALT: () => $.SUBRULE($.supScriptedExpression)}
     ]));
 
     $.RULE("fraction", () => {
-      $.CONSUME(Fraction)
+      $.CONSUME(Fraction);
       $.CONSUME(LBracket);
-      $.CONSUME(NumberLiteral, {LABEL: "num"})
+      $.CONSUME(NumberLiteral, {LABEL: "num"});
       $.CONSUME(RBracket);
       $.CONSUME2(LBracket);
-      $.CONSUME2(NumberLiteral, {LABEL: "denom"})
+      $.CONSUME2(NumberLiteral, {LABEL: "denom"});
       $.CONSUME2(RBracket);
     })
 
@@ -157,15 +161,46 @@ class IndexorPure extends CstParser {
       $.CONSUME(LParen);
       $.SUBRULE($.expression);
       $.CONSUME(RParen);
+      $.OPTION(() => {
+        $.SUBRULE($.scripts, {LABEL: "scripts"});
+      });
+    });
+    
+    $.RULE("subExpr", () => {
+      $.CONSUME(Literal, {LABEL: "literal"});
+      $.OPTION(() => {
+        $.SUBRULE($.scripts, {LABEL: "scripts"});
+      });
     });
 
-    $.RULE("subScriptedExpression", () => {
-      $.CONSUME(AlphaLiteral, {LABEL: "literal"});
+    $.RULE("scripts", () => $.OR([
+      {ALT: () => $.SUBRULE($.subSupScript, {LABEL:"subSup"})},
+      {ALT: () => $.SUBRULE($.supSubScript, {LABEL:"supSub"})}
+    ]));
+
+    $.RULE("subSupScript", () => {
+      $.CONSUME(SubScript);
+      $.CONSUME(LBracket);
+      $.SUBRULE2($.commaScriptExpression, {LABEL: "cov"});
+      $.CONSUME(RBracket);
       $.OPTION(() => {
-        $.CONSUME(SubScript);
-        $.CONSUME(LBracket);
+        $.CONSUME2(SupScript);
+        $.CONSUME2(LBracket);
+        $.SUBRULE2($.indicesExpression, {LABEL: "contra"});
+        $.CONSUME2(RBracket);
+      });
+    });
+
+    $.RULE("supSubScript", () => {
+      $.CONSUME(SupScript);
+      $.CONSUME(LBracket);
+      $.SUBRULE2($.indicesExpression, {LABEL: "contra"});
+      $.CONSUME(RBracket);
+      $.OPTION(() => {
+        $.CONSUME2(SubScript);
+        $.CONSUME2(LBracket);
         $.SUBRULE2($.commaScriptExpression, {LABEL: "cov"});
-        $.CONSUME(RBracket);
+        $.CONSUME2(RBracket);
       });
     });
 
@@ -187,18 +222,8 @@ class IndexorPure extends CstParser {
       $.SUBRULE($.indicesExpression, {LABEL: "rhs"});
     });
 
-    $.RULE("supScriptedExpression", () => {
-      $.SUBRULE($.subScriptedExpression, {LABEL: "lower"});
-      $.OPTION(() => {
-        $.CONSUME(SupScript);
-        $.CONSUME(LBracket);
-        $.SUBRULE2($.indicesExpression, {LABEL: "contra"});
-        $.CONSUME(RBracket);
-      });
-    });
-
     $.RULE("indicesExpression", () => {
-      $.CONSUME(AlphaLiteral, {LABEL: "head"});
+      $.CONSUME(Literal, {LABEL:"head"});
       $.MANY(() => {
         $.SUBRULE2($.indicesExpression, {LABEL: "tail"});
       });
@@ -363,20 +388,16 @@ class IndexorInterpreter extends BaseCstVisitor {
   }
 
   atomicExpression(ctx) {
-if (ctx.parenthesisExpression) {
+  if (ctx.parenthesisExpression) {
       // passing an array to "this.visit" is equivalent
       // to passing the array's first element
       return this.visit(ctx.parenthesisExpression)
     }
-    else if (ctx.NumberLiteral) {
-      // If a key exists on the ctx, at least one element is guaranteed
-      return { cov: new Set([]), contra: new Set([]), ein: new Set([]), errors: new Set([]) }
-    }
     else if (ctx.fraction) {
       return this.visit(ctx.fraction)
     }
-    else if (ctx.supScriptedExpression) {
-      return this.visit(ctx.supScriptedExpression)
+    else if (ctx.subExpr) {
+      return this.visit(ctx.subExpr)
     }
   }
 
@@ -387,17 +408,121 @@ if (ctx.parenthesisExpression) {
   parenthesisExpression(ctx) {
     // The ctx will also contain the parenthesis tokens, but we don't care about those
     // in the context of calculating the result.
-    return this.visit(ctx.expression);
+    const result_par = this.visit(ctx.expression);
+    if (ctx.scripts) {
+      const result_scripts = this.visit(ctx.scripts);
+
+      // check that an index does not appear twice as covariant or contravariant
+      const inter_cov = intersection(result_par.cov, result_scripts.cov);
+      const inter_contra = intersection(result_par.contra, result_scripts.contra);
+      const ein_par = intersection(result_par.ein, union(result_scripts.cov, result_scripts.contra));
+      const ein_scripts = intersection(result_scripts.ein, union(result_par.cov, result_par.contra));
+
+      [inter_cov, inter_contra, ein_par, ein_scripts].forEach((inter) => {
+        inter.forEach((idc) => {
+          result_par.errors.add("index '" + idc + "' appears twice at the same level in and outside of parenthenses");
+        });
+      });
+
+      // convert indices that appear both upstairs and downstairs to Einstein sum indices
+      let inter_cov_contra = intersection(result_par.cov, result_scripts.contra);
+      const inter_contra_cov = intersection(result_par.contra, result_scripts.cov);
+
+      inter_cov_contra.forEach((idc) => {
+        result_par.cov.delete(idc);
+        result_scripts.contra.delete(idc);
+        result_par.ein.add(idc);
+      });
+
+      inter_contra_cov.forEach((idc) => {
+        result_par.contra.delete(idc);
+        result_scripts.cov.delete(idc);
+        result_par.ein.add(idc);
+      });
+
+      // carry all indices over to the lhs
+      result_scripts.cov.forEach((idc) => {
+        result_par.cov.add(idc);
+      });
+
+      result_scripts.contra.forEach((idc) => {
+        result_par.contra.add(idc);
+      });
+
+      result_scripts.ein.forEach((idc) => {
+        result_par.ein.add(idc);
+      });
+    }
+    return result_par;
   }
 
-  subScriptedExpression(ctx) {
+  subExpr(ctx) {
     let image = ctx.literal[0].image;
-    if (ctx.cov) {
-      const result_cov = this.visit(ctx.cov, image);
-      return result_cov;
+    let result;
+    if (ctx.scripts) {
+      result = this.visit(ctx.scripts, image);
     } else {
-      return {idx: new Set([]), errors: new Set([]), image:image};
+      result = {cov: new Set([]), contra: new Set([]), ein: new Set([]), errors: new Set([]), image:image};
     }
+    return result;
+  }
+  
+  scripts(ctx, image) {
+    let result;
+    if (ctx.subSup) {
+      result = this.visit(ctx.subSup, image);
+    } else {
+      result = this.visit(ctx.supSub, image);
+    }
+    return result;
+  }
+  
+  subSupScript(ctx, image) {
+    let result_sub = this.visit(ctx.cov, image);
+    let result_sup = {idx: new Set([]), errors: new Set([])};
+    if (ctx.contra) {
+      result_sup = this.visit(ctx.contra, image);
+    }
+    
+    // check for repeated indices
+    let ein = intersection(result_sub.idx, result_sup.idx);
+    ein.forEach((idc) => {
+      result_sub.idx.delete(idc);
+      result_sup.idx.delete(idc);
+    });
+
+    const result = {
+      cov: result_sub.idx,
+      contra: result_sup.idx,
+      ein: ein,
+      errors: union(result_sub.errors, result_sub.errors)
+    };
+
+    return result
+  }
+  
+  supSubScript(ctx, image) {
+    let result_sup = this.visit(ctx.contra, image);
+    let result_sub = {idx: new Set([]), errors: new Set([])};
+    if (ctx.cov) {
+      result_sub = this.visit(ctx.cov, image);
+    }
+    
+    // check for repeated indices
+    let ein = intersection(result_sub.idx, result_sup.idx);
+    ein.forEach((idc) => {
+      result_sub.idx.delete(idc);
+      result_sup.idx.delete(idc);
+    });
+
+    const result = {
+      cov: result_sub.idx,
+      contra: result_sup.idx,
+      ein: ein,
+      errors: union(result_sub.errors, result_sub.errors)
+    };
+
+    return result
   }
 
   commaScriptExpression(ctx, image) {
@@ -430,44 +555,24 @@ if (ctx.parenthesisExpression) {
     return result_lhs;
   }
 
-  supScriptedExpression(ctx) {
-    let result_lower = this.visit(ctx.lower);
-    let result_upper;
-    if (ctx.contra) {
-      result_upper = this.visit(ctx.contra, result_lower.image);
-    } else {
-      result_upper = {idx: new Set([]), errors: new Set([])};
-    }
-
-    // check for repeated indices
-    let ein = intersection(result_lower.idx, result_upper.idx);
-    ein.forEach((idc) => {
-      result_lower.idx.delete(idc);
-      result_upper.idx.delete(idc);
-    });
-
-    const result = {
-      cov: result_lower.idx,
-      contra: result_upper.idx,
-      ein: ein,
-      errors: union(result_lower.errors, result_upper.errors)
-    };
-
-    return result
-  }
-
   indicesExpression(ctx, image) {
-    const current_idx = ctx.head[0].image;
+    const current_idx = ctx.head[0];
     if (ctx.tail) {
       const tailResult = this.visit(ctx.tail, image);
-      if (!tailResult.idx.has(current_idx)) {
-        tailResult.idx.add(current_idx);
-      } else {
-        tailResult.errors.add("index '" + current_idx + "' appears twice at the same level of " + image);
+      if (current_idx.tokenType.name == "AlphaLiteral") {
+        if (!tailResult.idx.has(current_idx.image)) {
+          tailResult.idx.add(current_idx.image);
+        } else {
+          tailResult.errors.add("index '" + current_idx + "' appears twice at the same level of " + image);
+         }
       }
       return tailResult;
     } else {
-      return {idx: new Set([current_idx]), errors: new Set([])};
+        let idx_set = new Set([]);
+        if (current_idx.tokenType.name == "AlphaLiteral") {
+            idx_set.add(current_idx.image);
+        }
+        return {idx: idx_set, errors: new Set([])};
     }
   }
 }
@@ -511,8 +616,7 @@ class IndexorReplacer extends BaseCstVisitor {
         result += " " + operator.image + " " + rhsValue;
       })
     }
-
-    return result
+    return result;
   }
 
   multiplicationExpression(ctx) {
@@ -535,14 +639,10 @@ class IndexorReplacer extends BaseCstVisitor {
       // passing an array to "this.visit" is equivalent
       // to passing the array's first element
       return this.visit(ctx.parenthesisExpression)
-    } else if (ctx.NumberLiteral) {
-      // If a key exists on the ctx, at least one element is guaranteed
-      return ctx.NumberLiteral[0].image;
     } else if (ctx.fraction) {
-      // If a key exists on the ctx, at least one element is guaranteed
       return this.visit(ctx.fraction);
-    } else if (ctx.supScriptedExpression) {
-      return this.visit(ctx.supScriptedExpression)
+    } else if (ctx.subExpr) {
+      return this.visit(ctx.subExpr);
     }
   }
 
@@ -553,17 +653,47 @@ class IndexorReplacer extends BaseCstVisitor {
   parenthesisExpression(ctx) {
     // The ctx will also contain the parenthesis tokens, but we don't care about those
     // in the context of calculating the result.
-    return "(" + this.visit(ctx.expression) + ")";
+    let par = "(" + this.visit(ctx.expression) + ")";
+    if (ctx.scripts) {
+      par += this.visit(ctx.scripts);
+    }
+    return par;
   }
 
-  subScriptedExpression(ctx) {
+  subExpr(ctx) {
     let result = ctx.literal[0].image;
+    if (ctx.scripts) {
+      result += this.visit(ctx.scripts);
+    }
+    return result;
+  }
+  
+  scripts(ctx) {
+    let result;
+    if (ctx.subSup) {
+      result = this.visit(ctx.subSup);
+    } else {
+      result = this.visit(ctx.supSub);
+    }
+    return result;
+  }
+  
+  subSupScript(ctx) {
+    let result = "_{" + this.visit(ctx.cov) + "}";
+    if (ctx.contra) {
+      result += "^{" + this.visit(ctx.contra) + "}";
+    }
+    return result;
+  }
+
+  supSubScript(ctx) {
+    let result = "^{" + this.visit(ctx.contra) + "}";
     if (ctx.cov) {
       result += "_{" + this.visit(ctx.cov) + "}";
     }
     return result;
   }
-
+  
   commaScriptExpression(ctx) {
     if (ctx.cov) {
       return this.visit(ctx.cov);
@@ -584,16 +714,6 @@ class IndexorReplacer extends BaseCstVisitor {
     return ctx.diffop[0].image + this.visit(ctx.rhs);
   }
 
-  supScriptedExpression(ctx) {
-    let result = this.visit(ctx.lower);
-
-    if (ctx.contra) {
-      result += "^{" + this.visit(ctx.contra) + "}";
-    }
-
-    return result
-  }
-
   indicesExpression(ctx) {
     const image = ctx.head[0].image;
     let result = image;
@@ -607,13 +727,12 @@ class IndexorReplacer extends BaseCstVisitor {
   }
 }
 
-// for the playground to work the returned object must contain these fields
-
-// return {
-//   lexer: IndexorLexer,
-//   parser: IndexorPure,
-//   visitor: IndexorReplacer,
-//   //visitor: IndexorInterpreter,
-//   defaultRule: "expression"
-// }
-// }())
+// for the playground to work the returned object must contain these field
+//
+//  return {
+//    lexer: IndexorLexer,
+//    parser: IndexorPure,
+//    visitor: IndexorReplacer,
+//    defaultRule: "expression"
+//  }
+//  }())

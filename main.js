@@ -192,6 +192,30 @@ function clearMap() {
     replace()
 }
 
+function createGroup(label, name, value) {
+    const e = document.createElement("li");
+    e.className = "list-group-item";
+    const group = document.createElement("div");
+    group.classList.add("input-group", "mb-1")
+    const label_span = document.createElement("span");
+    label_span.textContent = label;
+    label_span.className = "input-group-text";
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = name;
+    input.value = value;
+    input.size = 10;
+    input.classList.add("form-control", "replace_value");
+    input.addEventListener("input", replace);
+
+    group.appendChild(label_span);
+    group.appendChild(input);
+
+    e.appendChild(group);
+
+    return e;
+  }
+
 input.addEventListener("input", () => {
     if (input.value.length == 0) {
       return;
@@ -223,56 +247,17 @@ input.addEventListener("input", () => {
         }
 
         r.cov_list.forEach((i) => {
-            const e = document.createElement("li");
-            e.className = "list-group-item";
-            const text = document.createElement("span");
-            text.textContent = i + " → ";
-            text.className = "replace_target";
-            const input = document.createElement("input");
-            input.type = "text";
-            input.name = i;
-            input.value = indicesMap[i] || "";
-            input.size = 10;
-            input.className = "replace_value";
-            input.addEventListener("input", replace);
-            e.appendChild(text);
-            e.appendChild(input);
+            const e = createGroup(i, i, indicesMap[i] || "");
             cov.appendChild(e);
         });
 
         r.contra_list.forEach((i) => {
-            const e = document.createElement("li");
-            e.className = "list-group-item";
-            const text = document.createElement("span");
-            text.textContent = i + " → ";
-            text.className = "replace_target";
-            const input = document.createElement("input");
-            input.type = "text";
-            input.name = i;
-            input.value = indicesMap[i] || "";
-            input.size = 10;
-            input.className = "replace_value";
-            input.addEventListener("input", replace);
-            e.appendChild(text);
-            e.appendChild(input);
+            const e = createGroup(i, i, indicesMap[i] || "");
             contra.appendChild(e);
         });
 
         r.ein_list.forEach((i) => {
-            const e = document.createElement("li");
-            e.className = "list-group-item";
-            const text = document.createElement("span");
-            text.textContent = i + " → ";
-            text.className = "replace_target";
-            const input = document.createElement("input");
-            input.type = "text";
-            input.name = i;
-            input.value = indicesMap[i] || "";
-            input.size = 10;
-            input.className = "replace_value";
-            input.addEventListener("input", replace);
-            e.appendChild(text);
-            e.appendChild(input);
+            const e = createGroup(i, i, indicesMap[i] || "");
             ein.appendChild(e);
         });
         if (r.cov_list.length > 0) {
