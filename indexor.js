@@ -77,7 +77,7 @@ const RBracket = createToken({name: "RBracket", pattern: /}/});
 
 const Literal = createToken({name: "Literal", pattern: Lexer.NA});
 const NumberLiteral = createToken({name: "NumberLiteral", pattern: /[1-9]\d*/, categories: Literal});
-const AlphaLiteral = createToken({name: "AlphaLiteral", pattern: /\\?[a-zA-Z]+/, categories: Literal});
+const AlphaLiteral = createToken({name: "AlphaLiteral", pattern: /\\?[a-zA-ZαβΓγΔδεζηΘθικΛλμνΞξΠπρΣσςτυΦφχΨψΩω]+/, categories: Literal});
 
 const Fraction = createToken({name: "Fraction", pattern: /\\frac/, longer_alt: AlphaLiteral});
 
