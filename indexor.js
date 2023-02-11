@@ -150,10 +150,10 @@ class IndexorPure extends CstParser {
     $.RULE("fraction", () => {
       $.CONSUME(Fraction);
       $.CONSUME(LBracket);
-      $.CONSUME(NumberLiteral, {LABEL: "num"});
+      $.SUBRULE($.expression, {LABEL: "num"});
       $.CONSUME(RBracket);
       $.CONSUME2(LBracket);
-      $.CONSUME2(NumberLiteral, {LABEL: "denom"});
+      $.SUBRULE2($.expression, {LABEL: "denom"});
       $.CONSUME2(RBracket);
     })
 
@@ -402,7 +402,42 @@ class IndexorInterpreter extends BaseCstVisitor {
   }
 
   fraction(ctx) {
-    return { cov: new Set([]), contra: new Set([]), ein: new Set([]), errors: new Set([]) }
+    const result_num = this.visit(ctx.num);
+    const result_denom = this.visit(ctx.denom);
+
+    result_denom.errors.forEach((e) => result_num.errors.add(e));
+
+    // find Einstein sum indices
+  
+    const inter_cov_cov = intersection(result_num.cov, result_denom.cov);
+    const inter_contra_contra = intersection(result_num.contra, result_denom.contra);
+
+    inter_cov_cov.forEach((idc) => {
+      result_num.cov.delete(idc);
+      result_denom.cov.delete(idc);
+      result_num.ein.add(idc);
+    });
+
+    inter_contra_contra.forEach((idc) => {
+      result_num.contra.delete(idc);
+      result_denom.contra.delete(idc);
+      result_num.ein.add(idc);
+    });
+
+    // carry all indices over to the lhs
+    result_denom.cov.forEach((idc) => {
+      result_num.contra.add(idc);
+    });
+
+    result_denom.contra.forEach((idc) => {
+      result_num.cov.add(idc);
+    });
+
+    result_denom.ein.forEach((idc) => {
+      result_num.ein.add(idc);
+    });
+
+    return result_num;
   }
 
   parenthesisExpression(ctx) {
@@ -647,7 +682,7 @@ class IndexorReplacer extends BaseCstVisitor {
   }
 
   fraction(ctx) {
-    return "\\frac{" + ctx.num[0].image + "}{" + ctx.denom[0].image + "}";
+    return "\\frac{" + this.visit(ctx.num) + "}{" + this.visit(ctx.denom) + "}";
   }
 
   parenthesisExpression(ctx) {
