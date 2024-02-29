@@ -1,3 +1,5 @@
+import * as Indexor from './indexor.js'
+
 function startindexor() {
 const input = document.getElementById("input");
 
@@ -16,8 +18,8 @@ const errors = document.getElementById("errors");
 
 const clear_btn = document.getElementById("clear_btn");
 
-const visitor = new IndexorInterpreter();
-const replacer = new IndexorReplacer();
+const visitor = new Indexor.IndexorInterpreter();
+const replacer = new Indexor.IndexorReplacer();
 
 const outputElements = [contra, cov, ein, errors, tex, replaced_tex];
 const hideableOutputElements = [errors];
@@ -150,8 +152,8 @@ function delete_saved_expression(eid) {
  
 function replace() {
     let r = {};
-    fields = document.getElementsByClassName("replace_value");
-    for(i of fields) {
+    const fields = document.getElementsByClassName("replace_value");
+    for(const i of fields) {
         if (i.name != i.value) {
             r[i.name] = i.value;
         }
@@ -163,7 +165,7 @@ function replace() {
 
     replacer.set_indicesMap(r);
 
-    current_replaced_tex = replacer.visit(parser_expression);
+    const current_replaced_tex = replacer.visit(parser_expression);
 
     let mj_options = MathJax.getMetricsFor(replaced_tex, true);
     const mj_tex = MathJax.tex2svg(current_replaced_tex, mj_options);
@@ -220,10 +222,10 @@ input.addEventListener("input", () => {
     if (input.value.length == 0) {
       return;
     }
-    lexResult = IndexorLexer.tokenize(input.value);
+    const lexResult = Indexor.IndexorLexer.tokenize(input.value);
 
-    parser.input = lexResult.tokens
-    parser_expression = parser.expression()
+    Indexor.parser.input = lexResult.tokens
+    parser_expression = Indexor.parser.expression()
 
     outputElements.map((e) => {
         e.replaceChildren();
@@ -233,8 +235,8 @@ input.addEventListener("input", () => {
 
     hide(clear_btn);
 
-    if (parser.errors.length == 0) {
-        r = visitor.visit(parser_expression);
+    if (Indexor.parser.errors.length == 0) {
+        const r = visitor.visit(parser_expression);
 
         r.errors.forEach((e) => {
             const i = document.createElement("li");
@@ -276,7 +278,7 @@ input.addEventListener("input", () => {
         replace();
 
     } else {
-        parser.errors.forEach((e) => {
+        Indexor.parser.errors.forEach((e) => {
             const i = document.createElement("li");
             if (e.name == "NoViableAltException") {
                 i.textContent = e.message;
@@ -288,7 +290,7 @@ input.addEventListener("input", () => {
             }
             errors.appendChild(i);
         });
-        if (parser.errors.length > 0) {
+        if (Indexor.parser.errors.length > 0) {
             show(errors);
         }
     }
@@ -302,3 +304,5 @@ save_btn.addEventListener("click", save)
 
 input.dispatchEvent(new Event("input"));
 }
+
+startindexor();

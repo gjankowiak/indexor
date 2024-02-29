@@ -1,52 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Indexor</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="apple-touch-icon" sizes="57x57" href="favicons/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="favicons/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="favicons/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="favicons/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="favicons/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="favicons/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="favicons/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="favicons/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="favicons/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="favicons/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
-    <link rel="manifest" href="favicons/manifest.json">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="favicons/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff">
-    <!-- <link href="css/style.css" rel="stylesheet"> -->
-    <!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> -->
-    <!-- <script id="MathJax-script" src="tex-mml-svg.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-svg.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
-  </head>
-  <body class="p-3 m-0 border-0">
-    <div class="container">
-    <div id="tex_wrapper" class="bg-primary p-2 m-1 border border-secondary rounded" style="--bs-bg-opacity: 0.0; --bs-border-opacity: 0.3">
+
+<head>
+  <title>Indexor</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="apple-touch-icon" sizes="57x57" href="favicons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="favicons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="favicons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="favicons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="favicons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="favicons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="favicons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="favicons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+  <link rel="manifest" href="favicons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="favicons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+    crossorigin="anonymous">
+</head>
+
+<body class="p-3 m-0 border-0">
+  <div class="container">
+    <div id="tex_wrapper" class="bg-primary p-2 m-1 border border-secondary rounded"
+      style="--bs-bg-opacity: 0.0; --bs-border-opacity: 0.3">
       <h5>Input <button id="save_btn" class="btn btn-sm btn-outline-secondary">save</button></h5>
       <div class="input-group mb-3">
         <span class="input-group-text" id="tex-label">TeX</span>
-        <input type="text" id="input" class="form-control" aria-describedby="tex-label"
-        aria-label="tex" value="\Delta R_{i j k l} + 2(B_{i j k l} - B_{i j l k} - B_{i l j k} + B_{i k j l}) = R_{j l;k i}-R_{j k,l i}-R_{i l;k j}+R_{i k;l j}+g^{p q}(R_{p j k l}R_{q i}+R_{i p k l}R_{q j})">
+        <input type="text" id="input" class="form-control" aria-describedby="tex-label" aria-label="tex"
+          value="\Delta R_{i j k l} + 2(B_{i j k l} - B_{i j l k} - B_{i l j k} + B_{i k j l}) = R_{j l;k i}-R_{j k,l i}-R_{i l;k j}+R_{i k;l j}+g^{p q}(R_{p j k l}R_{q i}+R_{i p k l}R_{q j})">
       </div>
       <div id="tex" class="text-black bg-primary rounded p-1" style="--bs-bg-opacity: 0.3">MathJax is loading...</div>
     </div>
 
-      <div class="hidden m-1 border border-danger rounded" style="--bs-bg-opacity: 0.3;">
-        <h5 class="bg-danger p-2 text-white">Errors</h5>
-        <ul id="errors"></ul>
-      </div>
+    <div class="hidden m-1 border border-danger rounded" style="--bs-bg-opacity: 0.3;">
+      <h5 class="bg-danger p-2 text-white">Errors</h5>
+      <ul id="errors"></ul>
+    </div>
 
-    <div id="replaced_tex_wrapper" class="bg-primary p-2 m-1 border border-secondary rounded" style="--bs-bg-opacity:0.0; --bs-border-opacity: 0.3">
+    <div id="replaced_tex_wrapper" class="bg-primary p-2 m-1 border border-secondary rounded"
+      style="--bs-bg-opacity:0.0; --bs-border-opacity: 0.3">
       <h5>Output</h5>
-      <div id="replaced_tex" class="text-black bg-primary rounded p-1" style="--bs-bg-opacity:0.3">MathJax is loading...</div>
+      <div id="replaced_tex" class="text-black bg-primary rounded p-1" style="--bs-bg-opacity:0.3">MathJax is loading...
+      </div>
       <code id="replaced_tex_plain" class="p-1"></code>
       <div class="form-check">
         <input class="form-check-input" id="spaces_checkbox" type="checkbox" value="">
@@ -54,79 +56,132 @@
       </div>
     </div>
 
-    <div id="rules_wrapper" class="bg-primary p-2 m-1 border border-secondary rounded" style="--bs-bg-opacity:0.0; --bs-border-opacity: 0.3">
-      <h5 class="hidden">Replacement rules <button id="clear_btn" class="btn btn-sm btn-outline-secondary">clear</button></h5>
+    <div id="rules_wrapper" class="bg-primary p-2 m-1 border border-secondary rounded"
+      style="--bs-bg-opacity:0.0; --bs-border-opacity: 0.3">
+      <h5 class="hidden">Replacement rules <button id="clear_btn"
+          class="btn btn-sm btn-outline-secondary">clear</button></h5>
 
       <div class="row align-items-start">
-      <div class="col">
-        Covariant indices: <ul id="cov" class="p-1 mr-2"></ul>
-      </div>
+        <div class="col">
+          Covariant indices: <ul id="cov" class="p-1 mr-2"></ul>
+        </div>
 
-      <div class="col">
-        Contravariant indices: <ul id="contra" class="p-1 mr-2"></ul>
-      </div>
+        <div class="col">
+          Contravariant indices: <ul id="contra" class="p-1 mr-2"></ul>
+        </div>
 
-      <div class="col">
-        Einstein sum indices: <ul id="ein" class="p-1 mr-2"></ul>
+        <div class="col">
+          Einstein sum indices: <ul id="ein" class="p-1 mr-2"></ul>
+        </div>
       </div>
-      </div>
+    </div>
+
+
+    <div class="hidden p-2 m-1 border border-secondary rounded" style="--bs-border-opacity:0.3">
+      <h5>Saved expressions</h5>
+      <ul id="saved_expressions" class="list-group"></ul>
     </div>
 
 
-      <div class="hidden p-2 m-1 border border-secondary rounded" style="--bs-border-opacity:0.3">
-        <h5>Saved expressions</h5>
-        <ul id="saved_expressions" class="list-group"></ul>
+    <div class="accordion m-1" id="accordionPanelsStayOpenExample">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse"
+            data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+            aria-controls="panelsStayOpen-collapseOne">
+            Instructions
+          </button>
+        </h2>
+        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
+          aria-labelledby="panelsStayOpen-headingOne">
+          <div class="accordion-body">
+            <ul id="instructions_list">
+              <li>Input is LaTeX-like (see example), some commands allowed.</li>
+              <li>Identifiers ("tensors" and indices) can be sequences of letter from a to z (lower- or uppercase).</li>
+              <li><i>Indices must be separated by spaces.</i></li>
+              <li>Only operators supported are + - and =.</li>
+              <li>Fractions are allowed, indices in the denominator are swapped, meaning $\partial f/\partial x^{i}$ is
+                a (0,1)-tensor.</li>
+              <li>Multiplication is implicit.</li>
+              <li>Sub-/supercript are written with _{indices} and ^{indices}.</li>
+              <li>LaTeX commands can be used in the replacement rule (\alpha, etc.).
+            </ul>
+          </div>
+        </div>
       </div>
 
-
-  <div class="accordion m-1" id="accordionPanelsStayOpenExample">
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="panelsStayOpen-headingOne">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-        Instructions
-      </button>
-    </h2>
-    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
-      <div class="accordion-body">
-    <ul id="instructions_list">
-      <li>Input is LaTeX-like (see example), some commands allowed.</li>
-      <li>Identifiers ("tensors" and indices) can be sequences of letter from a to z (lower- or uppercase).</li>
-      <li><i>Indices must be separated by spaces.</i></li>
-      <li>Only operators supported are + - and =.</li>
-      <li>Fractions are allowed, indices in the denominator are swapped, meaning $\partial f/\partial x^{i}$ is a (0,1)-tensor.</li>
-      <li>Multiplication is implicit.</li>
-      <li>Sub-/supercript are written with _{indices} and ^{indices}.</li>
-      <li>LaTeX commands can be used in the replacement rule (\alpha, etc.).
-    </ul>
-      </div>
-    </div>
-  </div>
-
-    <p class="small"><a href="https://git.oknaj.eu/gapato/indexor">Indexor</a>, built with <a href="https://chevrotain.io/docs/">Chevrotain</a>. © G. Jankowiak
+      <p class="small"><a href="https://git.oknaj.eu/gapato/indexor">Indexor</a>, built with <a
+          href="https://chevrotain.io/docs/">Chevrotain</a>. © G. Jankowiak
     </div>
 
     <style scoped>
-p { margin-top: 1em; margin-left: 0.5em; }
-.small { font-size: 0.7em; }
-.replace_value { padding: 0.2em; padding-left: 0.5em;}
-.replace_target { text-align: right; display: inline-block; width: 3em; margin-right: 0.5em;}
-li { margin-bottom: 0.2em; }
-.hidden { display: none; }
-ul#instructions_list { list-style: circle; font-size: 0.8em; }
-.saved_expr { border-left: 5px solid #acacac; padding-left: 15px; border-radius: 10px; }
-.replaced_tex_plain { font-family: mono; font-size: 0.7em; background-color: #eee; }
-.form { font-size: 0.8em; }
-.input-group-text { justify-content: center; min-width: 2.5rem;}
-.MathJax { margin: 0.5em 0!important; }
+      p {
+        margin-top: 1em;
+        margin-left: 0.5em;
+      }
+
+      .small {
+        font-size: 0.7em;
+      }
+
+      .replace_value {
+        padding: 0.2em;
+        padding-left: 0.5em;
+      }
+
+      .replace_target {
+        text-align: right;
+        display: inline-block;
+        width: 3em;
+        margin-right: 0.5em;
+      }
+
+      li {
+        margin-bottom: 0.2em;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      ul#instructions_list {
+        list-style: circle;
+        font-size: 0.8em;
+      }
+
+      .saved_expr {
+        border-left: 5px solid #acacac;
+        padding-left: 15px;
+        border-radius: 10px;
+      }
+
+      .replaced_tex_plain {
+        font-family: mono;
+        font-size: 0.7em;
+        background-color: #eee;
+      }
+
+      .form {
+        font-size: 0.8em;
+      }
+
+      .input-group-text {
+        justify-content: center;
+        min-width: 2.5rem;
+      }
+
+      .MathJax {
+        margin: 0.5em 0 !important;
+      }
     </style>
     <script>
       MathJax = {
         startup: {
           ready: () => {
             MathJax.startup.defaultReady();
-            MathJax.startup.promise.then(() => {
-              startindexor();
-            });
+            // MathJax.startup.promise.then(() => {
+            //   startindexor();
+            // });
           }
         },
         tex: {
@@ -139,8 +194,10 @@ ul#instructions_list { list-style: circle; font-size: 0.8em; }
         }
       };
     </script>
-    <script src="indexor.js"></script>
-    <script src="main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-  </body>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-svg.js"></script>
+    <script type="module" src="main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+      crossorigin="anonymous"></script>
+</body>
+
 </html>

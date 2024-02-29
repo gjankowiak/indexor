@@ -1,6 +1,5 @@
+import * as chevrotain from 'https://cdn.jsdelivr.net/npm/chevrotain@11.0.3/+esm';
 //(function latexExampleCst() {
-import chevrotain from 'https://cdn.jsdelivr.net/npm/chevrotain@11.0.3/+esm';
-"use strict";
 /**
 * An Example of implementing a Indexor with separated grammar and semantics (actions).
 * This separation makes it easier to maintain the grammar and reuse it in different use cases.
@@ -762,6 +761,8 @@ class IndexorReplacer extends BaseCstVisitor {
     return result;
   }
 }
+
+export { parser, IndexorInterpreter, IndexorReplacer, IndexorLexer };
 
 // for the playground to work the returned object must contain these field
 //
