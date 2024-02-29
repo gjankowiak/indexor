@@ -1,4 +1,5 @@
 //(function latexExampleCst() {
+import chevrotain from 'https://cdn.jsdelivr.net/npm/chevrotain@11.0.3/+esm';
 "use strict";
 /**
 * An Example of implementing a Indexor with separated grammar and semantics (actions).
