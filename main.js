@@ -74,13 +74,13 @@ function hide(e) {
 
 function save() {
     const e = input.value;
-    for (se of saved_expressions_list) {
+    for (const se of saved_expressions_list) {
       if (e === se.tex) {
         alert("This expression is aready saved!");
         return;
       }
     };
-    new_expression = {
+    const new_expression = {
       id: save_counter++,
       svg: tex.childNodes[0].cloneNode(true),
       tex: e
@@ -92,7 +92,7 @@ function save() {
 }
 
 function restore_saved_expression(eid) {
-  for (e of saved_expressions_list) {
+  for (const e of saved_expressions_list) {
       if (e.id == eid) {
         input.value = e.tex
         input.dispatchEvent(new Event("input"));
